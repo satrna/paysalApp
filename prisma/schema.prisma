@@ -1,0 +1,68 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Mock {
+  id Int @id @default(autoincrement())
+  name String
+  base_salary Int
+  total_salary Int
+  date DateTime @db.Date
+  time_in DateTime @db.Time(0)
+  time_out DateTime @db.Time(0)
+}
+
+model Employee {
+  id            Int          @id @default(autoincrement())
+  name          String
+  position      String
+  base_salary   Int
+  allowance     Int        @default(0)
+  daily_rate    Int
+  overtime_rate Int
+  time_in DateTime @db.Time(0)
+  time_out DateTime @db.Time(0)
+  add_on_pays   AddOnPay[]
+  attendances   Attendance[]
+  overtimes     Overtime[]
+}
+
+model Attendance {
+  id                 Int      @id @default(autoincrement())
+  time_in DateTime @db.Time(0)
+  time_out DateTime @db.Time(0)
+  current_daily_rate Int
+  date               DateTime @db.Date
+  employeeId         Int
+  employee           Employee @relation(fields: [employeeId], references: [id])
+}
+
+model Overtime {
+  id                      Int      @id @default(autoincrement())
+  hours                   Float
+  current_overtime_rate   Int
+  total_overtime_paycheck Int
+  date               DateTime @db.Date
+  employeeId              Int
+  employee                Employee @relation(fields: [employeeId], references: [id])
+}
+
+model AddOnPay {
+  id         Int      @id @default(autoincrement())
+  bonus      Int    @default(0)
+  deduction  Int    @default(0)
+  date               DateTime @db.Date
+  employeeId Int
+  employee   Employee @relation(fields: [employeeId], references: [id])
+}
