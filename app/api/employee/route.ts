@@ -23,33 +23,39 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
-    const { name, position, base_salary, allowance, time_in, time_out } = data;
+    const { name, salary, date, time_in, time_out } = data;
 
     // Ensure the necessary fields are present
-    if (!name || !position || !base_salary || allowance || !time_in || !time_out) {
+    if (!name || !salary || !date || !time_in || !time_out) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 });
     }
 
     // Calculate base_salary and total_salary
-    const daily_rate = Math.floor(base_salary / 21);
-    const overtime_rate = Math.floor(base_salary / 173);
+    const base_salary = Math.floor(salary / 21);
 
     const timeIn = new Date(time_in);
     const timeOut = new Date(time_out);
 
+    // Calculate the total hours worked in milliseconds
+    const hoursWorked =
+      (timeOut.getTime() - timeIn.getTime()) / (1000 * 60 * 60); // Convert milliseconds to hours
+
+    // Calculate total_salary
+    const total_salary = Math.floor(hoursWorked * base_salary);
+
     // Create a new mock record in the database
-    const newEmployee = await prisma.employee.create({
+    const newMock = await prisma.mock.create({
       data: {
         name,
-        position,
         base_salary,
-        allowance,
+        total_salary,
+        date: new Date(date),
         time_in: timeIn,
         time_out: timeOut,
       },
     });
 
-    return NextResponse.json(newEmployee, { status: 201 });
+    return NextResponse.json(newMock, { status: 201 });
   } catch (error) {
     console.error("Error creating mock:", error);
     return NextResponse.json(
