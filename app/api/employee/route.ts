@@ -23,43 +23,41 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
-    const { name, salary, date, time_in, time_out } = data;
+    const { name, position, base_salary, allowance, time_in, time_out } = data;
 
     // Ensure the necessary fields are present
-    if (!name || !salary || !date || !time_in || !time_out) {
+    if (!name || !position || !base_salary || !time_in || !time_out) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 });
     }
-
-    // Calculate base_salary and total_salary
-    const base_salary = Math.floor(salary / 21);
 
     const timeIn = new Date(time_in);
     const timeOut = new Date(time_out);
 
-    // Calculate the total hours worked in milliseconds
-    const hoursWorked =
-      (timeOut.getTime() - timeIn.getTime()) / (1000 * 60 * 60); // Convert milliseconds to hours
 
-    // Calculate total_salary
-    const total_salary = Math.floor(hoursWorked * base_salary);
 
-    // Create a new mock record in the database
-    const newMock = await prisma.mock.create({
+    // Example calculation for base_salary (customize as needed)
+    const daily_rate_cal = Math.floor(base_salary / 21);
+    const overtime_rate_cal = Math.floor(base_salary / 173);
+
+    // Create a new employee record in the database
+    const newEmployee = await prisma.employee.create({
       data: {
         name,
+        position,
         base_salary,
-        total_salary,
-        date: new Date(date),
+        allowance: allowance || 0,
+        daily_rate: daily_rate_cal,
+        overtime_rate: overtime_rate_cal,
         time_in: timeIn,
         time_out: timeOut,
       },
     });
 
-    return NextResponse.json(newMock, { status: 201 });
+    return NextResponse.json(newEmployee, { status: 201 });
   } catch (error) {
-    console.error("Error creating mock:", error);
+    console.error("Error creating employee:", error);
     return NextResponse.json(
-      { error: "Failed to create mock" },
+      { error: "Failed to create employee" },
       { status: 500 }
     );
   } finally {

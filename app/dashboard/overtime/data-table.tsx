@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button";
 import AddButton from "@/app/components/dashboard/button/add";
 import DeleteButton from "@/app/components/dashboard/button/delete";
+import OvertimeModal from "./overtimeModal";
 
 import * as React from "react";
 import {
@@ -36,6 +37,7 @@ export function DataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
+  const [rowSelection, setRowSelection] = React.useState({})
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -49,9 +51,11 @@ export function DataTable<TData, TValue>({
     getFilteredRowModel: getFilteredRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
+    onRowSelectionChange: setRowSelection,
     state: {
       columnFilters,
       sorting,
+      rowSelection,
     },
     initialState: {
       pagination: {
@@ -72,7 +76,7 @@ export function DataTable<TData, TValue>({
           }
           className="max-w-sm"
         />
-        <AddButton />
+        <OvertimeModal />
         <DeleteButton />
       </div>
       <div className="rounded-md border bg-slate-50">

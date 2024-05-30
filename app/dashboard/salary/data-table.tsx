@@ -2,6 +2,8 @@
 import { Button } from "@/components/ui/button";
 import AddButton from "@/app/components/dashboard/button/add";
 import DeleteButton from "@/app/components/dashboard/button/delete";
+import SalaryModal from "./salaryModal";
+import SalaryDownloaderModal from "./salaryDownloaderModal";
 
 import * as React from "react";
 import {
@@ -26,6 +28,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Imprima } from "next/font/google";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -36,6 +39,7 @@ export function DataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
+  const [rowSelection, setRowSelection] = React.useState({})
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -49,9 +53,11 @@ export function DataTable<TData, TValue>({
     getFilteredRowModel: getFilteredRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
+    onRowSelectionChange: setRowSelection,
     state: {
       columnFilters,
       sorting,
+      rowSelection,
     },
     initialState: {
       pagination: {
@@ -72,8 +78,9 @@ export function DataTable<TData, TValue>({
           }
           className="max-w-sm"
         />
-        <AddButton />
+        <SalaryModal />
         <DeleteButton />
+        <SalaryDownloaderModal />
       </div>
       <div className="rounded-md border bg-slate-50">
         <Table>
